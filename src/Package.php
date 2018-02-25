@@ -816,8 +816,6 @@ class Package
             }
         }
 
-        $zip = new ZipArchive();
-        $zip->open($zip_file_path, ZipArchive::CREATE);
         $dir = new SplFileInfo(".");
 
         // this is included here to make this class standalone, but ideally
@@ -829,17 +827,44 @@ class Package
             $baseDir = $dir->getPathInfo()->getRealPath();
         }
 
+        $zip = new ZipArchive();
+        $zip->open($zip_file_path, ZipArchive::CREATE);
+
         if (count($contents) === 0) {
             $zip->addEmptyDir($dir->getBasename());
         } else {
+            $minefile = null;
+            foreach ($contents as $c) {
+                $name = str_replace($baseDir.DIRECTORY_SEPARATOR, "", $c);
+                if ($name == 'mimetype') {
+                    $minefile = $c;
+                    break;
+                }
+            }
+
+            if ($minefile !== null) {
+                $name = str_replace($baseDir.DIRECTORY_SEPARATOR, "",
+                    $minefile);
+                $zip->addFile($minefile, $name);
+                $zip->setCompressionName($name, ZipArchive::CM_STORE);
+                $zip->close();
+                $this->setZip($zip_file_path);
+                $zip->open($zip_file_path, ZipArchive::OVERWRITE);
+            }
+
             foreach ($contents as $c) {
                 if (is_dir($c)) {
                     // safe to do because directories will always come before their contents
                     // in the array returned by getDirectoryContents()
                     $zip->addEmptyDir($dir->getBasename());
                 } else {
-                    $zip->addFile($c,
-                        str_replace($baseDir.DIRECTORY_SEPARATOR, "", $c));
+                    $name = str_replace($baseDir.DIRECTORY_SEPARATOR, "", $c);
+                    if ($name == 'mimetype') {
+                        continue;
+                    } else {
+                        $zip->setCompressionName($name, ZipArchive::CM_DEFLATE);
+                    }
+                    $zip->addFile($c, $name);
                 }
             }
         }

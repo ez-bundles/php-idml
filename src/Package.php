@@ -49,6 +49,7 @@ class Package
     const IDML_FILENAME_EXTENSION = ".idml";
     const IDML_NAMESPACE_PREFIX = "idPkg";
     const IDML_NAMESPACE_URI = "http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging";
+    const IDML_MIMETYPE_FILENAME = 'mimetype';
 
     /**
      * @var DOMDocument
@@ -125,11 +126,10 @@ class Package
      */
     public function getUnzipPath()
     {
-        if ( ! $this->unzip_path && $this->zip) {
-            $this->unzip_path = dirname($this->zip).DIRECTORY_SEPARATOR."."
-                .basename($this->zip);
+        if (!$this->unzip_path && $this->zip) {
+            $this->unzip_path = dirname($this->zip) . DIRECTORY_SEPARATOR . "."
+                . basename($this->zip);
         }
-
         return $this->unzip_path;
     }
 
@@ -140,7 +140,7 @@ class Package
      */
     public function setUnzipPath($unzip_path)
     {
-        $this->unzip_path = rtrim($unzip_path, '/').'/';
+        $this->unzip_path = rtrim($unzip_path, '/') . '/';
 
         return $this;
     }
@@ -153,7 +153,7 @@ class Package
      * @return array An array of the full paths of those contents.
      */
     // this is included here to make this class standalone but ideally you'd factor it out
-    // see my gist of recursive utils @ https://gist.github.com/deathlyfrantic/086bba7b2a25ec8e57cc
+    // see my gist of recursive utils @ https://gist.github.com/zandrmartin/086bba7b2a25ec8e57cc
     public function getDirectoryContents($path)
     {
         $results = [];
@@ -184,15 +184,15 @@ class Package
     protected $packageElements
         = [
             "BackingStory" => "set",
-            "Fonts"        => "set",
-            "Graphic"      => "set",
-            "Mapping"      => "set",
+            "Fonts" => "set",
+            "Graphic" => "set",
+            "Mapping" => "set",
             "MasterSpread" => "add",
-            "Preferences"  => "set",
-            "Spread"       => "add",
-            "Story"        => "add",
-            "Styles"       => "set",
-            "Tags"         => "set",
+            "Preferences" => "set",
+            "Spread" => "add",
+            "Story" => "add",
+            "Styles" => "set",
+            "Tags" => "set"
         ];
 
     /**
@@ -209,7 +209,9 @@ class Package
     public function __construct($path = null)
     {
         if ($path) {
-            if (preg_match("#".self::IDML_FILENAME_EXTENSION."$#i", $path)) {
+            if (preg_match("#" . self::IDML_FILENAME_EXTENSION . "$#i",
+                $path)
+            ) {
                 $this->setZip($path)->load();
             } else {
                 if (is_dir($path)) {
@@ -267,7 +269,6 @@ class Package
     public function setDesignMap(DOMDocument $val)
     {
         $this->designMap = $val;
-
         return $this;
     }
 
@@ -305,7 +306,6 @@ class Package
     public function setMasterSpreads(array $val)
     {
         $this->designMap = $val;
-
         return $this;
     }
 
@@ -329,7 +329,6 @@ class Package
     public function setGraphic(DOMDocument $val)
     {
         $this->graphic = $val;
-
         return $this;
     }
 
@@ -353,7 +352,6 @@ class Package
     public function setFonts(DOMDocument $val)
     {
         $this->fonts = $val;
-
         return $this;
     }
 
@@ -377,7 +375,6 @@ class Package
     public function setStyles(DOMDocument $val)
     {
         $this->styles = $val;
-
         return $this;
     }
 
@@ -401,7 +398,6 @@ class Package
     public function setPreferences(DOMDocument $val)
     {
         $this->preferences = $val;
-
         return $this;
     }
 
@@ -437,7 +433,6 @@ class Package
     public function setSpreads(array $val)
     {
         $this->spreads = $val;
-
         return $this;
     }
 
@@ -446,7 +441,7 @@ class Package
      *
      * @return DOMElement|null
      */
-    public function getStorie($key)
+    public function getStory($key)
     {
         if (array_key_exists($key, $this->stories)) {
             return $this->stories[$key];
@@ -473,7 +468,6 @@ class Package
     public function setStories(array $val)
     {
         $this->stories = $val;
-
         return $this;
     }
 
@@ -497,7 +491,6 @@ class Package
     public function setBackingStory(DOMDocument $val)
     {
         $this->backingStory = $val;
-
         return $this;
     }
 
@@ -521,7 +514,6 @@ class Package
     public function setTags(DOMDocument $val)
     {
         $this->tags = $val;
-
         return $this;
     }
 
@@ -545,7 +537,6 @@ class Package
     public function setMapping(DOMDocument $val)
     {
         $this->mapping = $val;
-
         return $this;
     }
 
@@ -561,7 +552,7 @@ class Package
     public function setDirectory($path)
     {
         if (is_dir($path)) {
-            $this->directory = rtrim(realpath($path), '/').'/';
+            $this->directory = rtrim(realpath($path), '/') . '/';
         } else {
             throw new Error(sprintf('Directory not found : %s', $path));
         }
@@ -604,7 +595,6 @@ class Package
     {
         if (file_exists($path)) {
             $this->zip = realpath($path);
-
             return $this;
         } else {
             throw new Error(sprintf('File not found : %s', $path));
@@ -625,11 +615,10 @@ class Package
         $this->setDirectory($unzip_path);
         $zip = new ZipArchive();
         if ($zip->open($zip_filename)) {
-            if ( ! $zip->extractTo($unzip_path)) {
+            if (!$zip->extractTo($unzip_path)) {
                 throw new Error(sprintf('Unable to extract file : %s',
                     $zip_filename));
             }
-
             return $zip->close();
         } else {
             throw new Error(sprintf('Unable to open file : %s', $zip_filename));
@@ -646,7 +635,6 @@ class Package
         $this->setSpreads([])
             ->setMasterSpreads([])
             ->setStories([]);
-
         return $this;
     }
 
@@ -659,9 +647,8 @@ class Package
      */
     public function loadDesignMap()
     {
-        $designMap = $this->createDom($this->getDirectory().'designmap.xml');
-        $this->setDesignMap($designMap);
-
+        $designmap = $this->createDom($this->getDirectory() . "designmap.xml");
+        $this->setDesignMap($designmap);
         return $this;
     }
 
@@ -677,7 +664,7 @@ class Package
      */
     public function load()
     {
-        if ( ! $this->getDirectory()) {
+        if (!$this->getDirectory()) {
             $this->unZip($this->getZip(), $this->getUnZipPath());
         }
 
@@ -687,25 +674,22 @@ class Package
         $this->loadDesignMap();
 
         $xpath = new DOMXPath($this->getDesignMap());
-        $xpath->registerNamespace(
-            self::IDML_NAMESPACE_PREFIX,
-            self::IDML_NAMESPACE_URI
-        );
+        $xpath->registerNamespace(self::IDML_NAMESPACE_PREFIX,
+            self::IDML_NAMESPACE_URI);
         // I just didn't want to type all the loading logic out so I did a complicated loop
 
         foreach ($this->packageElements as $packageElement => $setPrefix) {
-            $elements = $xpath->query(
-                "//".self::IDML_NAMESPACE_PREFIX.":".$packageElement
-            );
+            $elements = $xpath->query("//" . self::IDML_NAMESPACE_PREFIX . ":"
+                . $packageElement);
 
             if ($elements->length) {
                 /** @var DOMElement $element */
                 foreach ($elements as $element) {
                     $filename = $element->getAttribute("src");
-                    $filepath = $this->getDirectory().$filename;
+                    $filepath = $this->getDirectory() . $filename;
                     if (file_exists($filepath)) {
                         $file = $this->createDom($filepath);
-                        $setter = $setPrefix.$packageElement;
+                        $setter = $setPrefix . $packageElement;
                         $this->$setter($file);
                     }
                 }
@@ -723,7 +707,6 @@ class Package
     public function saveDesignMap()
     {
         $this->getDesignMap()->save($this->getDesignMap()->documentURI);
-
         return $this;
     }
 
@@ -735,7 +718,6 @@ class Package
     public function saveStories()
     {
         $this->saveArrayOfDoms($this->getStories());
-
         return $this;
     }
 
@@ -747,7 +729,6 @@ class Package
     public function saveMasterSpreads()
     {
         $this->saveArrayOfDoms($this->getMasterSpreads());
-
         return $this;
     }
 
@@ -759,7 +740,6 @@ class Package
     public function saveSpreads()
     {
         $this->saveArrayOfDoms($this->getSpreads());
-
         return $this;
     }
 
@@ -780,7 +760,7 @@ class Package
 
         foreach ($this->packageElements as $element => $setPrefix) {
             if ($setPrefix == "set") {
-                $getter = "get".$element;
+                $getter = "get" . $element;
                 $file = $this->$getter();
 
                 if ($file instanceof DOMDocument) {
@@ -801,9 +781,8 @@ class Package
     /**
      * Zip this package into an IDML file from its component parts.
      *
-     * @param string|null $zip_file_path [optional] If supplied, this is the filename of the zipped package.
-     *                                   If not supplied, this defaults to the name of the directory of this
-     *                                   IDML package with a ".idml" extension.
+     * @param string|null $zip_file_path [optional] If supplied, this is the filename of the zipped package. If not supplied,
+     *                                   this defaults to the name of the directory of this IDML package with a ".idml" extension.
      *
      * @return $this
      * @throws Error
@@ -813,12 +792,12 @@ class Package
         $currentDirectory = getcwd();
         chdir($this->getDirectory());
 
-        if ( ! $zip_file_path) {
+        if (!$zip_file_path) {
             if ($this->isZip()) {
                 $zip_file_path = basename($this->getZip());
             } else {
                 $zip_file_path = basename($this->getDirectory())
-                    .self::IDML_FILENAME_EXTENSION;
+                    . self::IDML_FILENAME_EXTENSION;
             }
         }
 
@@ -848,18 +827,18 @@ class Package
 
             // if the file for export already exist, we will not replace
             // it with a regenerate archive contains mimetype
-            if ( ! $is_exist_zip) {
+            if (!$is_exist_zip) {
                 $minefile = null;
                 foreach ($contents as $c) {
-                    $name = str_replace($baseDir.DIRECTORY_SEPARATOR, "", $c);
-                    if ($name == 'mimetype') {
+                    $name = str_replace($baseDir . DIRECTORY_SEPARATOR, "", $c);
+                    if ($name == self::IDML_MIMETYPE_FILENAME) {
                         $minefile = $c;
                         break;
                     }
                 }
 
                 if ($minefile !== null) {
-                    $name = str_replace($baseDir.DIRECTORY_SEPARATOR,
+                    $name = str_replace($baseDir . DIRECTORY_SEPARATOR,
                         "", $minefile);
                     $zip->addFile($minefile, $name);
                     $zip->setCompressionName($name, ZipArchive::CM_STORE);
@@ -875,8 +854,8 @@ class Package
                     // in the array returned by getDirectoryContents()
                     $zip->addEmptyDir($dir->getBasename());
                 } else {
-                    $name = str_replace($baseDir.DIRECTORY_SEPARATOR, "", $c);
-                    if ($name == 'mimetype') {
+                    $name = str_replace($baseDir . DIRECTORY_SEPARATOR, "", $c);
+                    if ($name == self::IDML_MIMETYPE_FILENAME) {
                         continue;
                     } else {
                         $zip->setCompressionName($name, ZipArchive::CM_DEFLATE);
@@ -904,7 +883,6 @@ class Package
     {
         $key = str_replace(["Story_", ".xml"], "", basename($val->documentURI));
         $this->stories[$key] = $val;
-
         return $this;
     }
 
@@ -919,11 +897,10 @@ class Package
     {
         $this->addStory($val);
         $node = $this->getDesignMap()->createElement(self::IDML_NAMESPACE_PREFIX
-            .":Story");
+            . ":Story");
         $this->getDesignMap()->documentElement->appendChild($node);
         $source = str_replace($this->getDirectory(), "", $val->documentURI);
         $node->setAttribute("src", $source);
-
         return $this;
     }
 
@@ -938,7 +915,6 @@ class Package
     public function addSpread(DOMDocument $val)
     {
         $this->spreads[$this->getSelfAttributeOfDom($val)] = $val;
-
         return $this;
     }
 
@@ -947,7 +923,7 @@ class Package
      * See the notes on the getFirstSpread() method - you'll have to adjust this if your IDML
      * files have more than one spread.
      *
-     * @param DOMNode     $val    The element to be added to the spread.
+     * @param DOMNode $val The element to be added to the spread.
      * @param DOMDocument $spread The spread you want to which you want to add the element. If not provided, defaults
      *                            to whatever getFirstSpread() returns.
      *
@@ -955,14 +931,13 @@ class Package
      */
     public function addElementToSpread(DOMNode $val, DOMDocument $spread = null)
     {
-        if ( ! $spread) {
+        if (!$spread) {
             $spread = $this->getFirstSpread();
         }
 
         $spreadNodelist = $spread->getElementsByTagName("Spread");
         $spreadElement = $spreadNodelist->item($spreadNodelist->length - 1);
         $spreadElement->appendChild($spread->importNode($val, true));
-
         return $this;
     }
 
@@ -977,7 +952,6 @@ class Package
     public function addMasterSpread(DOMDocument $val)
     {
         $this->masterSpreads[$this->getSelfAttributeOfDom($val)] = $val;
-
         return $this;
     }
 
@@ -996,7 +970,7 @@ class Package
     /**
      * Get layers from the designmap.xml of this IDML package.
      *
-     * @param bool $selfsOnly   If true, returns only the self attributes of the layers. If false,
+     * @param bool $selfsOnly If true, returns only the self attributes of the layers. If false,
      *                          returns the layer elements.
      * @param bool $visibleOnly If true, returns only visible layers. If false, returns all layers.
      *
@@ -1018,7 +992,6 @@ class Package
             );
 
             sort($names);
-
             return array_unique($names);
         }
 
@@ -1028,7 +1001,7 @@ class Package
     /**
      * Returns the specified DOM element if it can be found within the package.
      *
-     * @param string $self The self attribute of the requested DOM element. Generally something like "u12f".
+     * @param string $self The self attibute of the requested DOM element. Generally something like "u12f".
      *
      * @throws Error if the specified node cannot be found.
      * @return DOMNode A DOMNode of the requested element if it is found.
@@ -1036,16 +1009,16 @@ class Package
     public function getElementBySelfAttribute($self = "")
     {
         if ($self !== "") {
-            $domArray = array_merge(
+            $doms = array_merge(
                 $this->getSpreads(),
                 $this->getMasterSpreads(),
                 $this->getStories(),
                 [$this->getBackingStory()]
             );
 
-            foreach ($domArray as $dom) {
+            foreach ($doms as $dom) {
                 $xpath = new DOMXPath($dom);
-                $elements = $xpath->query("//node()[@Self='".$self."']");
+                $elements = $xpath->query("//node()[@Self='" . $self . "']");
 
                 if ($elements->length > 0) {
                     return $elements->item(0);
@@ -1083,7 +1056,6 @@ class Package
 
         if ($filename && file_exists($filename)) {
             $dom->load($filename);
-
             return $dom;
         } else {
             throw new Error(sprintf("Unable to load file : %s.", $filename));
@@ -1116,17 +1088,16 @@ class Package
      */
     protected function getSelfAttributeOfDom(DOMDocument $dom)
     {
-        $elementName = str_replace(self::IDML_NAMESPACE_PREFIX.":", "",
+        $elementName = str_replace(self::IDML_NAMESPACE_PREFIX . ":", "",
             $dom->documentElement->nodeName);
         $element = $dom->documentElement->getElementsByTagName($elementName)
             ->item(0);
-
         return $element->getAttribute("Self");
     }
 
     /**
      * Returns the ParagraphStyle or CharacterStyle node from the Styles.xml file that is
-     * associated with the given $node.
+     * assocated with the given $node.
      *
      * @param DOMElement $node The node whose AppliedStyle you want.
      *
@@ -1137,14 +1108,14 @@ class Package
     {
         $xpath = new DOMXPath($this->getStyles());
         $nodeType = str_replace("StyleRange", "", $node->nodeName);
-        $type = "Applied{$nodeType}Style";
+        $type = "Applied{" . $nodeType . "}Style";
         $style = $node->getAttribute($type);
 
-        if ( ! $style) {
+        if (!$style) {
             throw new Error("Unable to find style node for given {$node->nodeName}.");
         }
 
-        $nodeList = $xpath->query("//node()[@Self='".$style."']");
+        $nodeList = $xpath->query("//node()[@Self='" . $style . "']");
 
         if ($nodeList->length > 0) {
             return $nodeList->item(0);
@@ -1158,7 +1129,7 @@ class Package
      * Searches for a given style attribute as exhaustively as possible.
      *
      * @param DOMElement $node The node whose attribute you want.
-     * @param string     $attr The name of the attribute you want.
+     * @param string $attr The name of the attribute you want.
      *
      * @throws Error if attribute could not be found.
      * @return string Either a string of the attribute you want.
@@ -1177,16 +1148,15 @@ class Package
             }
         }
 
-        throw new Error(
-            sprintf("Unable to find value for attribute %s.", $attr)
-        );
+        throw new Error(sprintf("Unable to find value for attribute %s.",
+            $attr));
     }
 
     /**
      * Searches for a given style property as exhaustively as possible.
      *
      * @param DOMElement $node The node whose property you want.
-     * @param string     $prop The name of the property you want.
+     * @param string $prop The name of the property you want.
      *
      * @throws Error if property could not be found.
      * @return string Either a string of the property you want.
@@ -1215,9 +1185,8 @@ class Package
             }
         }
 
-        throw new Error(
-            sprintf("Unable to find value for property %s.", $prop)
-        );
+        throw new Error(sprintf("Unable to find value for property %s.",
+            $prop));
     }
 
     /**
@@ -1231,14 +1200,14 @@ class Package
     public function getMarkupTag(DOMElement $node)
     {
         $tag = false;
-        $selfArray = [$node->getAttribute("Self")];
+        $selfs = [$node->getAttribute("Self")];
         $xpath = new DOMXPath($this->getBackingStory());
 
         if ($node->nodeName === "TextFrame") {
-            $selfArray[] = $node->getAttribute("ParentStory");
+            $selfs[] = $node->getAttribute("ParentStory");
         }
 
-        foreach ($selfArray as $self) {
+        foreach ($selfs as $self) {
             $xmlElement = false;
 
             while ($node->parentNode) {
@@ -1251,20 +1220,16 @@ class Package
             }
 
             if ($xmlElement === false) {
-                $xmlElements = $xpath->query(
-                    "//XMLElement[@XMLContent='".$self."']"
-                );
+                $xmlElements = $xpath->query("//XMLElement[@XMLContent='"
+                    . $self . "']");
                 if ($xmlElements->length > 0) {
                     $xmlElement = $xmlElements->item(0);
                 }
             }
 
             if ($xmlElement && $xmlElement->getAttribute("MarkupTag")) {
-                $tag = str_replace(
-                    "XMLTag/",
-                    "",
-                    $xmlElement->getAttribute("MarkupTag")
-                );
+                $tag = str_replace("XMLTag/", "",
+                    $xmlElement->getAttribute("MarkupTag"));
             }
         }
 
@@ -1272,8 +1237,7 @@ class Package
             return urldecode($tag);
         }
 
-        throw new Error(sprintf(
-            "Unable to find markup tag for given {%s} node.",
+        throw new Error(sprintf("Unable to find markup tag for given {%s} node.",
             $node->nodeName));
     }
 }

@@ -1,5 +1,6 @@
 <?php
 // Copyright © 2016-2017 Zandr Martin
+// Copyright © 2018 Vasiliy Vasilyuk
 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -27,6 +28,7 @@ use \Exception;
  * Generic exception class thrown when any error is encountered within the
  * IDML\Package class.
  */
-class Error extends Exception {
+class Error extends Exception
+{
 
 }

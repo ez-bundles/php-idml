@@ -833,29 +833,40 @@ class Package
             $baseDir = $dir->getPathInfo()->getRealPath();
         }
 
+        $is_exist_zip = false;
         $zip = new ZipArchive();
-        $zip->open($zip_file_path, ZipArchive::CREATE);
+        if (file_exists($zip_file_path)) {
+            $is_exist_zip = true;
+            $zip->open($zip_file_path, ZipArchive::OVERWRITE);
+        } else {
+            $zip->open($zip_file_path, ZipArchive::CREATE);
+        }
 
         if (count($contents) === 0) {
             $zip->addEmptyDir($dir->getBasename());
         } else {
-            $minefile = null;
-            foreach ($contents as $c) {
-                $name = str_replace($baseDir.DIRECTORY_SEPARATOR, "", $c);
-                if ($name == 'mimetype') {
-                    $minefile = $c;
-                    break;
-                }
-            }
 
-            if ($minefile !== null) {
-                $name = str_replace($baseDir.DIRECTORY_SEPARATOR, "",
-                    $minefile);
-                $zip->addFile($minefile, $name);
-                $zip->setCompressionName($name, ZipArchive::CM_STORE);
-                $zip->close();
-                $this->setZip($zip_file_path);
-                $zip->open($zip_file_path, ZipArchive::OVERWRITE);
+            // if the file for export already exist, we will not replace
+            // it with a regenerate archive contains mimetype
+            if ( ! $is_exist_zip) {
+                $minefile = null;
+                foreach ($contents as $c) {
+                    $name = str_replace($baseDir.DIRECTORY_SEPARATOR, "", $c);
+                    if ($name == 'mimetype') {
+                        $minefile = $c;
+                        break;
+                    }
+                }
+
+                if ($minefile !== null) {
+                    $name = str_replace($baseDir.DIRECTORY_SEPARATOR,
+                        "", $minefile);
+                    $zip->addFile($minefile, $name);
+                    $zip->setCompressionName($name, ZipArchive::CM_STORE);
+                    $zip->close();
+                    $this->setZip($zip_file_path);
+                    $zip->open($zip_file_path, ZipArchive::OVERWRITE);
+                }
             }
 
             foreach ($contents as $c) {
@@ -1017,7 +1028,7 @@ class Package
     /**
      * Returns the specified DOM element if it can be found within the package.
      *
-     * @param string $self The self attibute of the requested DOM element. Generally something like "u12f".
+     * @param string $self The self attribute of the requested DOM element. Generally something like "u12f".
      *
      * @throws Error if the specified node cannot be found.
      * @return DOMNode A DOMNode of the requested element if it is found.
@@ -1025,14 +1036,14 @@ class Package
     public function getElementBySelfAttribute($self = "")
     {
         if ($self !== "") {
-            $doms = array_merge(
+            $domArray = array_merge(
                 $this->getSpreads(),
                 $this->getMasterSpreads(),
                 $this->getStories(),
                 [$this->getBackingStory()]
             );
 
-            foreach ($doms as $dom) {
+            foreach ($domArray as $dom) {
                 $xpath = new DOMXPath($dom);
                 $elements = $xpath->query("//node()[@Self='".$self."']");
 

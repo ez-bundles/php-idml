@@ -203,19 +203,17 @@ class Package
      * so they can be easily-modified before zipping up for processing.
      *
      * @param string|null $path
+     *
+     * @throws Error
      */
     public function __construct($path = null)
     {
         if ($path) {
             if (preg_match("#".self::IDML_FILENAME_EXTENSION."$#i", $path)) {
-                $this
-                    ->setZip($path)
-                    ->load();
+                $this->setZip($path)->load();
             } else {
                 if (is_dir($path)) {
-                    $this
-                        ->setDirectory($path)
-                        ->load();
+                    $this->setDirectory($path)->load();
                 }
             }
         }
@@ -657,11 +655,12 @@ class Package
      * to get all of the other components.
      *
      * @return $this
+     * @throws Error
      */
     public function loadDesignMap()
     {
-        $designmap = $this->createDom($this->getDirectory()."designmap.xml");
-        $this->setDesignMap($designmap);
+        $designMap = $this->createDom($this->getDirectory().'designmap.xml');
+        $this->setDesignMap($designMap);
 
         return $this;
     }
@@ -674,6 +673,7 @@ class Package
      * calling the setZip() or setDirectory() methods.
      *
      * @return $this
+     * @throws Error
      */
     public function load()
     {
@@ -687,13 +687,16 @@ class Package
         $this->loadDesignMap();
 
         $xpath = new DOMXPath($this->getDesignMap());
-        $xpath->registerNamespace(self::IDML_NAMESPACE_PREFIX,
-            self::IDML_NAMESPACE_URI);
+        $xpath->registerNamespace(
+            self::IDML_NAMESPACE_PREFIX,
+            self::IDML_NAMESPACE_URI
+        );
         // I just didn't want to type all the loading logic out so I did a complicated loop
 
         foreach ($this->packageElements as $packageElement => $setPrefix) {
-            $elements = $xpath->query("//".self::IDML_NAMESPACE_PREFIX.":"
-                .$packageElement);
+            $elements = $xpath->query(
+                "//".self::IDML_NAMESPACE_PREFIX.":".$packageElement
+            );
 
             if ($elements->length) {
                 /** @var DOMElement $element */
@@ -766,6 +769,7 @@ class Package
      * @param null|string $zip_file_path
      *
      * @return $this
+     * @throws Error
      */
     public function saveAll($zip_file_path = null)
     {
@@ -797,10 +801,12 @@ class Package
     /**
      * Zip this package into an IDML file from its component parts.
      *
-     * @param string|null $zip_file_path [optional] If supplied, this is the filename of the zipped package. If not supplied,
-     *                                   this defaults to the name of the directory of this IDML package with a ".idml" extension.
+     * @param string|null $zip_file_path [optional] If supplied, this is the filename of the zipped package.
+     *                                   If not supplied, this defaults to the name of the directory of this
+     *                                   IDML package with a ".idml" extension.
      *
      * @return $this
+     * @throws Error
      */
     public function zipPackage($zip_file_path = null)
     {
@@ -1109,7 +1115,7 @@ class Package
 
     /**
      * Returns the ParagraphStyle or CharacterStyle node from the Styles.xml file that is
-     * assocated with the given $node.
+     * associated with the given $node.
      *
      * @param DOMElement $node The node whose AppliedStyle you want.
      *
@@ -1214,14 +1220,14 @@ class Package
     public function getMarkupTag(DOMElement $node)
     {
         $tag = false;
-        $selfs = [$node->getAttribute("Self")];
+        $selfArray = [$node->getAttribute("Self")];
         $xpath = new DOMXPath($this->getBackingStory());
 
         if ($node->nodeName === "TextFrame") {
-            $selfs[] = $node->getAttribute("ParentStory");
+            $selfArray[] = $node->getAttribute("ParentStory");
         }
 
-        foreach ($selfs as $self) {
+        foreach ($selfArray as $self) {
             $xmlElement = false;
 
             while ($node->parentNode) {

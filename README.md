@@ -3,6 +3,8 @@
 A simple class to handle file management of Adobe InDesign IDML files. Keeping track of all the individual files within
 an `.idml` package is a chore. This helps a bit. (A *bit*.)
 
+[![Composer indesign/php-idml](https://img.shields.io/badge/composer-indesign%2Fphp--idml-green.svg?longCache=true&style=for-the-badge)](https://packagist.org/packages/indesign/php-idml)
+
 ## Installation
 
     composer require indesign/php-idml

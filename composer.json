@@ -1,28 +1,33 @@
 {
-	"name": "prometee/php-idml",
+	"name": "indesign/php-idml",
 	"description": "A simple class to handle file management of Adobe InDesign IDML files.",
 	"type": "library",
 	"license": "MIT",
 	"repositories": [
 		{
 			"type": "git",
-			"url": "https://github.com/Prometee/php-idml.git"
+			"url": "https://github.com/vasilyukvasiliy/php-idml.git"
 		}
 	],
-    "authors": [
-        {
-            "name": "Francis Hilaire",
-            "email": "prometee@gmail.com",
-            "homepage": "http://francishilaire.fr"
-        }
-    ],
+	"authors": [
+		{
+			"name": "Vasiliy Vasilyuk",
+			"email": "vasilyukvasiliy@gmail.com",
+			"homepage": "https://github.com/vasilyukvasiliy"
+		},
+		{
+			"name": "Francis Hilaire",
+			"email": "prometee@gmail.com",
+			"homepage": "http://francishilaire.fr"
+		}
+	],
 	"require": {
 		"php": ">=5.4.0",
 		"ext-zip": "*"
 	},
-    "autoload": {
-        "psr-4": {
-            "IDML\\": "src"
-        }
-    }
+	"autoload": {
+		"psr-4": {
+			"IDML\\": "src"
+		}
+	}
 }

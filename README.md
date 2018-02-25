@@ -1,15 +1,13 @@
-![PRs welcome but not actively maintained](https://img.shields.io/badge/status-PRs%20welcome%20but%20not%20actively%20maintained-red.svg?style=flat-square)
-
-## php-idml
+# php-idml
 
 A simple class to handle file management of Adobe InDesign IDML files. Keeping track of all the individual files within
 an `.idml` package is a chore. This helps a bit. (A *bit*.)
 
-### Installation
+## Installation
 
     composer require prometee/php-idml
 
-#### Usage
+### Usage
 
 Instantiate the object:
 
@@ -44,7 +42,7 @@ under the assumption that there is only one. This applied to the project from wh
 apply to yours. This method is also used in the `addElementToSpread()` method if a spread is not explicitly provided.
 Use caution.
 
-#### Notable Methods
+###Notable Methods
 
 These are just the most generic methods that existed in the project-specific version of this class. I have put zero
 effort into trying to make this a generically useful class.
@@ -73,6 +71,6 @@ effort into trying to make this a generically useful class.
 
 Everything else you'll just have to figure out on your own.
 
-#### License
+### License
 
-MIT
+The MIT License (MIT)

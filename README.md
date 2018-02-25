@@ -5,7 +5,7 @@ an `.idml` package is a chore. This helps a bit. (A *bit*.)
 
 ## Installation
 
-    composer require prometee/php-idml
+    composer require indesign/php-idml
 
 ### Usage
 
